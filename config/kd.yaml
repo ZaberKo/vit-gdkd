@@ -1,0 +1,5 @@
+cls: distillers.KD
+loss_weights:
+  ce: 1.0
+  kd: 1.0
+T: 1.0

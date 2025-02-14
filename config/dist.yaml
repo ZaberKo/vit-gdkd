@@ -1,0 +1,6 @@
+cls: distillers.DIST
+loss_weights:
+  ce: 1.0
+  beta: 2.0
+  gamma: 2.0
+T: 1.0
