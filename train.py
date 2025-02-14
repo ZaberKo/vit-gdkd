@@ -775,6 +775,6 @@ if __name__ == "__main__":
     args.output_dir = os.path.join(
         args.output_dir,
         datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
-        f"{args.model}-{args.teacher}-vanilla",
+        f"{args.model}-vanilla",
     )
     main(args)

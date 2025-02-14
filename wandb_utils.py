@@ -8,21 +8,22 @@ import torch
 from utils import MetricLogger, is_main_process
 
 
-
-
 def setup_wandb(args):
     if is_main_process():
         # os.environ["WANDB_DATA_DIR"] = Path(args.output_dir)/"wandb_cache"
         # os.environ["WANDB_CACHE_DIR"] = Path(args.output_dir)/"wandb_cache"
 
         distiller_name = getattr(args, "distiller", "vanilla")
-        exp_name = f"{args.model}-{args.teacher}-{distiller_name}"
+        if distiller_name == "vanilla":
+            exp_name = f"{args.model}-vanilla"
+        else:
+            exp_name = f"{args.model}-{args.teacher}-{distiller_name}"
 
         config = copy.deepcopy(vars(args))
         del config["wandb_tags"]
 
         tags = [args.model, args.teacher]
-        
+
         if len(args.wandb_tags) > 0:
             exp_name = f"{exp_name}|{args.wandb_tags}"
             tags += args.wandb_tags.split(",")
