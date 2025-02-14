@@ -16,13 +16,13 @@ def setup_wandb(args):
         distiller_name = getattr(args, "distiller", "vanilla")
         if distiller_name == "vanilla":
             exp_name = f"{args.model}-vanilla"
+            tags = [args.model]
         else:
             exp_name = f"{args.model}-{args.teacher}-{distiller_name}"
+            tags = [args.model, args.teacher]
 
         config = copy.deepcopy(vars(args))
         del config["wandb_tags"]
-
-        tags = [args.model, args.teacher]
 
         if len(args.wandb_tags) > 0:
             exp_name = f"{exp_name}|{args.wandb_tags}"
