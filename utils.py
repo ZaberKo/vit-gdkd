@@ -462,3 +462,10 @@ def set_weight_decay(
         if len(params[key]) > 0:
             param_groups.append({"params": params[key], "weight_decay": params_weight_decay[key]})
     return param_groups
+
+def print_args(args):
+    print("=== Parsed Arguments ===")
+    for key, value in vars(args).items():
+        print(f"--{key}={value}")
+
+    print("="*24)

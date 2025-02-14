@@ -252,7 +252,7 @@ def main(args):
 
     utils.init_distributed_mode(args)
     setup_wandb(args)
-    print(args)
+    utils.print_args(args)
 
     device = torch.device(args.device)
 
