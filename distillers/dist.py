@@ -33,7 +33,7 @@ def dist_loss_fn(student_logits, teacher_logits, T):
 
 
 class DIST(Distiller):
-    def forward_train(self, image, target, **kwargs):
+    def __call__(self, image, target, **kwargs):
         student_logits = self.student(image)
         with torch.inference_mode():
             teacher_logits = self.teacher(image)

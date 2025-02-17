@@ -91,7 +91,7 @@ def dkd_loss_fn(
 class DKD(Distiller):
     """DKD with some new losses"""
 
-    def forward_train(self, image, target, **kwargs):
+    def __call__(self, image, target, **kwargs):
         student_logits = self.student(image)
         with torch.inference_mode():
             teacher_logits = self.teacher(image)

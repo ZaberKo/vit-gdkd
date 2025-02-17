@@ -38,10 +38,7 @@ def train_one_epoch(
     scaler=None,
 ):
     distiller.train()
-    if args.distributed:
-        model = distiller.module.student
-    else:
-        model = distiller.student
+    model = distiller.student
 
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter("lr", utils.SmoothedValue(window_size=1, fmt="{value}"))
@@ -307,26 +304,10 @@ def main(args):
     )
     model.to(device)
 
-    print("Loading teacher model")
-    teacher_model = torchvision.models.get_model(
-        args.teacher, weights=args.teacher_weights, num_classes=num_classes
-    )
-    teacher_model.to(device)
-
     if args.distributed and args.sync_bn:
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
     criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
-
-    # load distiller cfg
-    with hydra.initialize(version_base=None, config_path="config"):
-        distiller_cfg = hydra.compose(args.distiller, overrides=args.distiller_opts)
-
-    # TODO: currently only support non-param distiller
-    distiller = hydra.utils.get_class(distiller_cfg.cls)(
-        model, teacher_model, criterion, distiller_cfg
-    )
-    distiller.to(device)
 
     custom_keys_weight_decay = []
     if args.bias_weight_decay is not None:
@@ -422,8 +403,8 @@ def main(args):
 
     model_without_ddp = model
     if args.distributed:
-        distiller = torch.nn.parallel.DistributedDataParallel(distiller, device_ids=[args.gpu])
-        model_without_ddp = distiller.module.student
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model_without_ddp = model.module
 
     model_ema = None
     if args.model_ema:
@@ -439,6 +420,20 @@ def main(args):
         model_ema = utils.ExponentialMovingAverage(
             model_without_ddp, device=device, decay=1.0 - alpha
         )
+
+    print("Loading teacher model")
+    teacher_model = torchvision.models.get_model(
+        args.teacher, weights=args.teacher_weights, num_classes=num_classes
+    )
+    teacher_model.to(device)
+    # load distiller cfg
+    with hydra.initialize(version_base=None, config_path="config"):
+        distiller_cfg = hydra.compose(args.distiller, overrides=args.distiller_opts)
+
+    # TODO: currently only support non-param distiller
+    distiller = hydra.utils.get_class(distiller_cfg.cls)(
+        model, teacher_model, criterion, distiller_cfg
+    )
 
     if args.resume:
         checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True)

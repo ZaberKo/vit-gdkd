@@ -22,6 +22,8 @@ from wandb_utils import setup_wandb, wandb_record
     - more options (eg: --val-batch-size, --ckpt-freq, ...)
 """
 
+os.environ["TORCH_HOME"] = "./torch_home"
+
 
 def train_one_epoch(
     model,
