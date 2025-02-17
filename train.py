@@ -22,6 +22,7 @@ from wandb_utils import setup_wandb, wandb_record
     - more options (eg: --val-batch-size, --ckpt-freq, ...)
 """
 
+
 def train_one_epoch(
     model,
     criterion,
@@ -276,9 +277,9 @@ def main(args):
     )
     data_loader_test = torch.utils.data.DataLoader(
         dataset_test,
-        batch_size=args.batch_size,
+        batch_size=args.val_batch_size,
         sampler=test_sampler,
-        num_workers=args.workers,
+        num_workers=args.val_workers,
         pin_memory=True,
     )
 
@@ -482,7 +483,7 @@ def main(args):
 
 def get_args_parser(add_help=True):
     parser = utils.get_default_args_parser()
-    
+
     #  ===== new =======
     parser.add_argument(
         "--tags",
@@ -506,7 +507,7 @@ def get_args_parser(add_help=True):
     parser.add_argument(
         "--ckpt-freq", default=10, type=int, help="checkpoint frequency"
     )
-    
+
     return parser
 
 
