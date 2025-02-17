@@ -137,11 +137,6 @@ def evaluate(model, criterion, data_loader, device, print_freq=100, log_suffix="
     return metric_logger
 
 
-
-
-
-
-
 def main(args):
     if args.output_dir:
         utils.mkdir(args.output_dir)
