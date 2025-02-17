@@ -726,6 +726,8 @@ def get_default_args_parser(add_help=True):
     )
     parser.add_argument("--use-v2", action="store_true", help="Use V2 transforms")
 
+    return parser
+
 def print_args(args):
     print("=== Parsed Arguments ===")
     for key, value in vars(args).items():
