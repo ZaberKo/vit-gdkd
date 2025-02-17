@@ -22,11 +22,11 @@ def setup_wandb(args):
             tags = [args.model, args.teacher]
 
         config = copy.deepcopy(vars(args))
-        del config["wandb_tags"]
+        del config["tags"]
 
-        if len(args.wandb_tags) > 0:
-            exp_name = f"{exp_name}|{args.wandb_tags}"
-            tags += args.wandb_tags.split(",")
+        if len(args.tags) > 0:
+            exp_name = f"{exp_name}|{args.tags}"
+            tags += args.tags.split(",")
 
         wandb.init(
             project="torch-distil",

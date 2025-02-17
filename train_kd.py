@@ -774,7 +774,7 @@ def get_args_parser(add_help=True):
 
     #  ===== new =======
     parser.add_argument(
-        "--wandb-tags",
+        "--tags",
         default="",
         type=str,
         help="specify wandb tags",
