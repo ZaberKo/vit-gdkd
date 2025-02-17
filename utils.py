@@ -590,7 +590,7 @@ def get_default_args_parser(add_help=True):
         type=float,
         help="minimum lr of lr schedule (default: 0.0)",
     )
-    parser.add_argument("--print-freq", default=10, type=int, help="print frequency")
+    parser.add_argument("--print-freq", default=10, type=int, help="print frequency for training")
     parser.add_argument(
         "--output-dir", default="./output", type=str, help="path to save outputs"
     )

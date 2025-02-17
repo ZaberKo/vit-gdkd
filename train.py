@@ -321,10 +321,21 @@ def main(args):
         torch.backends.cudnn.deterministic = True
         if model_ema:
             evaluate(
-                model_ema, criterion, data_loader_test, device=device, log_suffix="EMA"
+                model_ema,
+                criterion,
+                data_loader_test,
+                device=device,
+                print_freq=args.eval_print_freq,
+                log_suffix="EMA",
             )
         else:
-            evaluate(model, criterion, data_loader_test, device=device)
+            evaluate(
+                model,
+                criterion,
+                data_loader_test,
+                device=device,
+                print_freq=args.eval_print_freq,
+            )
         return
 
     print("Start training")
@@ -346,11 +357,22 @@ def main(args):
         wandb_record(train_metrics, epoch, group="train")
 
         lr_scheduler.step()
-        eval_metrics = evaluate(model, criterion, data_loader_test, device=device)
+        eval_metrics = evaluate(
+            model,
+            criterion,
+            data_loader_test,
+            device=device,
+            print_freq=args.eval_print_freq,
+        )
         wandb_record(eval_metrics, epoch, group="eval")
         if model_ema:
             eval_ema_metrics = evaluate(
-                model_ema, criterion, data_loader_test, device=device, log_suffix="EMA"
+                model_ema,
+                criterion,
+                data_loader_test,
+                device=device,
+                print_freq=args.eval_print_freq,
+                log_suffix="EMA",
             )
             wandb_record(eval_ema_metrics, epoch, group="eval-ema")
         if args.output_dir:
@@ -403,6 +425,9 @@ def get_args_parser(add_help=True):
     )
     parser.add_argument(
         "--ckpt-freq", default=10, type=int, help="checkpoint frequency"
+    )
+    parser.add_argument(
+        "--eval-print-freq", default=10, type=int, help="print frequency"
     )
 
     return parser
