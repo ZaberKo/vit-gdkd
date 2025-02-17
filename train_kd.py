@@ -38,6 +38,10 @@ def train_one_epoch(
     scaler=None,
 ):
     distiller.train()
+    if args.distributed:
+        model = distiller.module.student
+    else:
+        model = distiller.student
 
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter("lr", utils.SmoothedValue(window_size=1, fmt="{value}"))
