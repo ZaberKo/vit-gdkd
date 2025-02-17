@@ -37,9 +37,7 @@ def train_one_epoch(
     model_ema=None,
     scaler=None,
 ):
-    model = distiller.student
-    model.train()
-    distiller.teacher.eval()
+    distiller.train()
 
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter("lr", utils.SmoothedValue(window_size=1, fmt="{value}"))
@@ -420,8 +418,8 @@ def main(args):
 
     model_without_ddp = model
     if args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-        model_without_ddp = model.module
+        distiller = torch.nn.parallel.DistributedDataParallel(distiller, device_ids=[args.gpu])
+        model_without_ddp = model.module.student
 
     model_ema = None
     if args.model_ema:
