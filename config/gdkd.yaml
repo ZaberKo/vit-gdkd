@@ -2,8 +2,9 @@ cls: distillers.GDKD
 loss_weights:
   ce: 1.0
   w0: 0.5
-  w1: 2.0
-  w2: 2.0
+  w1: 1.0
+  w2: 1.0
 k: 5
 T: 1.0
-warmup_epochs: 1
+skip_epochs: 0
+warmup_epochs: 1 # start count after skip_epochs

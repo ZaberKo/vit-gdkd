@@ -22,13 +22,20 @@ class KD(Distiller):
             teacher_logits = self.teacher(image)
         # losses
         ce_loss = self.target_criterion(student_logits, target)
-        kd_loss = kd_loss_fn(student_logits, teacher_logits, self.cfg.T)
 
-        loss = self.cfg.loss_weights.ce * ce_loss + self.cfg.loss_weights.kd * kd_loss
+        if kwargs["epoch"] < self.cfg.skip_epochs:
+            loss = ce_loss
+            kd_loss = torch.zeros_like(loss)
+        else:
+            kd_loss = kd_loss_fn(student_logits, teacher_logits, self.cfg.T)
+
+            loss = (
+                self.cfg.loss_weights.ce * ce_loss + self.cfg.loss_weights.kd * kd_loss
+            )
 
         info_dict = {
-            "ce_loss": ce_loss,
-            "kd_loss": kd_loss,
-            "student_logits": student_logits,
+            "ce_loss": ce_loss.detach(),
+            "kd_loss": kd_loss.detach(),
+            "student_logits": student_logits.detach(),
         }
         return loss, info_dict

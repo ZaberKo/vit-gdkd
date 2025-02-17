@@ -40,18 +40,25 @@ class DIST(Distiller):
 
         # losses
         ce_loss = self.target_criterion(student_logits, target)
-        inter_loss, intra_loss = dist_loss_fn(
-            student_logits,
-            teacher_logits,
-            T=self.cfg.T,
-        )
 
-        dist_loss = (
-            self.cfg.loss_weights.beta * inter_loss
-            + self.cfg.loss_weights.gamma * intra_loss
-        )
+        if kwargs["epoch"] < self.cfg.skip_epochs:
+            loss = ce_loss
+            inter_loss = torch.zeros_like(loss)
+            intra_loss = torch.zeros_like(loss)
+            dist_loss = torch.zeros_like(loss)
+        else:
+            inter_loss, intra_loss = dist_loss_fn(
+                student_logits,
+                teacher_logits,
+                T=self.cfg.T,
+            )
 
-        loss = self.cfg.loss_weights.ce * ce_loss + dist_loss
+            dist_loss = (
+                self.cfg.loss_weights.beta * inter_loss
+                + self.cfg.loss_weights.gamma * intra_loss
+            )
+
+            loss = self.cfg.loss_weights.ce * ce_loss + dist_loss
 
         info_dict = {
             "ce_loss": ce_loss.detach(),

@@ -1,5 +1,6 @@
 cls: distillers.KD
 loss_weights:
-  ce: 1.0
-  kd: 1.0
+  ce: 0.5
+  kd: 0.5
 T: 1.0
+skip_epochs: 0

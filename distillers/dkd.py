@@ -98,19 +98,32 @@ class DKD(Distiller):
 
         # losses
         ce_loss = self.target_criterion(student_logits, target)
-        tckd_loss, nckd_loss = dkd_loss_fn(
-            student_logits,
-            teacher_logits,
-            target,
-            temperature=self.cfg.T,
-        )
-        dkd_loss = (
-            self.cfg.loss_weights.alpha * tckd_loss
-            + self.cfg.loss_weights.beta * nckd_loss
-        )
-        dkd_loss = min(kwargs["epoch"] / self.cfg.warmup_epochs, 1.0) * dkd_loss
 
-        loss = self.cfg.loss_weights.ce * ce_loss + dkd_loss
+        if kwargs["epoch"] < self.cfg.skip_epochs:
+            loss = ce_loss
+            dkd_loss = torch.zeros_like(loss)
+            tckd_loss = torch.zeros_like(loss)
+            nckd_loss = torch.zeros_like(loss)
+        else:
+            tckd_loss, nckd_loss = dkd_loss_fn(
+                student_logits,
+                teacher_logits,
+                target,
+                temperature=self.cfg.T,
+            )
+            dkd_loss = (
+                self.cfg.loss_weights.alpha * tckd_loss
+                + self.cfg.loss_weights.beta * nckd_loss
+            )
+            dkd_loss = (
+                min(
+                    (kwargs["epoch"] - self.cfg.skip_epochs) / self.cfg.warmup_epochs,
+                    1.0,
+                )
+                * dkd_loss
+            )
+
+            loss = self.cfg.loss_weights.ce * ce_loss + dkd_loss
 
         info_dict = {
             "ce_loss": ce_loss.detach(),

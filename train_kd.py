@@ -3,7 +3,6 @@ import os
 import time
 import warnings
 import hydra
-import wandb
 
 import presets
 import torch

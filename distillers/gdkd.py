@@ -90,19 +90,33 @@ class GDKD(Distiller):
 
         # losses
         ce_loss = self.target_criterion(student_logits, target)
-        high_loss, low_top_loss, low_other_loss = gdkd_loss_fn(
-            student_logits, teacher_logits, k=self.cfg.k, temperature=self.cfg.T
-        )
 
-        gdkd_loss = (
-            self.cfg.loss_weights.w0 * high_loss
-            + self.cfg.loss_weights.w1 * low_top_loss
-            + self.cfg.loss_weights.w2 * low_other_loss
-        )
+        if kwargs["epoch"] < self.cfg.skip_epochs:
+            loss = ce_loss
+            high_loss = torch.zeros_like(loss)
+            low_top_loss = torch.zeros_like(loss)
+            low_other_loss = torch.zeros_like(loss)
+            gdkd_loss = torch.zeros_like(loss)
+        else:
+            high_loss, low_top_loss, low_other_loss = gdkd_loss_fn(
+                student_logits, teacher_logits, k=self.cfg.k, temperature=self.cfg.T
+            )
 
-        gdkd_loss = min(kwargs["epoch"] / self.cfg.warmup_epochs, 1.0) * gdkd_loss
+            gdkd_loss = (
+                self.cfg.loss_weights.w0 * high_loss
+                + self.cfg.loss_weights.w1 * low_top_loss
+                + self.cfg.loss_weights.w2 * low_other_loss
+            )
 
-        loss = self.cfg.loss_weights.ce * ce_loss + gdkd_loss
+            gdkd_loss = (
+                min(
+                    (kwargs["epoch"] - self.cfg.skip_epochs) / self.cfg.warmup_epochs,
+                    1.0,
+                )
+                * gdkd_loss
+            )
+
+            loss = self.cfg.loss_weights.ce * ce_loss + gdkd_loss
 
         info_dict = {
             "ce_loss": ce_loss.detach(),
