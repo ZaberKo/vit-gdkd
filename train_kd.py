@@ -423,7 +423,7 @@ def main(args):
     model_without_ddp = model
     if args.distributed:
         distiller = torch.nn.parallel.DistributedDataParallel(distiller, device_ids=[args.gpu])
-        model_without_ddp = model.module.student
+        model_without_ddp = distiller.module.student
 
     model_ema = None
     if args.model_ema:
