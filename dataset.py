@@ -1,5 +1,6 @@
 import os
 import time
+import warnings
 
 import presets
 import torch
@@ -107,6 +108,12 @@ def load_data(traindir, valdir, args):
             dataset_test, shuffle=False
         )
     else:
+        if hasattr(args, "ra_sampler") and args.ra_sampler:
+            warnings.warn(
+                "--ra-sampler only works in distributed mode, fallback to RandomSampler",
+                "To enable RASampler, launch training by `torchrun --nproc_per_node=n`"
+            )
+
         train_sampler = torch.utils.data.RandomSampler(dataset)
         test_sampler = torch.utils.data.SequentialSampler(dataset_test)
 
