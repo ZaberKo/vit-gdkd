@@ -49,8 +49,9 @@ def get_logits(model, data_loader, device, args, header=""):
     ):
         start_time = time.time()
         image, target = _image.to(device), _target.to(device)
-        with torch.cuda.amp.autocast(enabled=args.amp):
-            logits = model(image)
+        with torch.inference_mode():
+            with torch.cuda.amp.autocast(enabled=args.amp):
+                logits = model(image)
 
         acc1, acc5 = utils.accuracy(logits, target, topk=(1, 5))
         batch_size = image.shape[0]
@@ -59,7 +60,7 @@ def get_logits(model, data_loader, device, args, header=""):
         metric_logger.meters["acc5"].update(acc5.item(), n=batch_size)
         metric_logger.meters["img/s"].update(batch_size / (time.time() - start_time))
 
-        logits = logits.to("cpu")
+        logits = logits.cpu()
         for j in range(num_classes):
             logits_dict[j].append(logits[_target == j])
 
@@ -132,13 +133,13 @@ def main(args):
     )
     model.to(device)
 
-    if args.distributed and args.sync_bn:
-        model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
+    # if args.distributed and args.sync_bn:
+    #     model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
-    model_without_ddp = model
-    if args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-        model_without_ddp = model.module
+    # model_without_ddp = model
+    # if args.distributed:
+    #     model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+    #     model_without_ddp = model.module
 
 
     logits_dict = get_logits(
