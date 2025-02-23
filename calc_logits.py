@@ -141,13 +141,17 @@ def main(args):
     #     model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
     #     model_without_ddp = model.module
 
+    if args.valset:
+        dataset_type = "val"
+    else:
+        dataset_type = "train"
 
     logits_dict = get_logits(
         model,
         data_loader,
         device=device,
         args=args,
-        header=args.model,
+        header=f"{args.model}-{dataset_type}-{args.suffix}",
     )
 
     path = os.path.join(args.output_dir, args.save_name)
@@ -158,6 +162,7 @@ def get_args_parser(add_help=True):
     parser = utils.get_default_args_parser()
 
     #  ===== new =======
+    parser.add_argument("--suffix", type=str)
     parser.add_argument("--save-name", type=str)
     parser.add_argument(
         "--valset",
@@ -177,6 +182,10 @@ def post_setup_args(args):
         suffix = "val"
     else:
         suffix = "train"
+
+    if args.suffix is not None:
+        suffix = f"{suffix}_{args.suffix}"
+
     if args.save_name is None:
         args.save_name = f"{args.model}_{suffix}.npz"
 
