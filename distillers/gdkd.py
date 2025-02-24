@@ -108,13 +108,15 @@ class GDKD(Distiller):
                 + self.cfg.loss_weights.w2 * low_other_loss
             )
 
-            gdkd_loss = (
-                min(
+            if self.cfg.warmup_epochs <= 0:
+                ratio = 1.0
+            else:
+                ratio = min(
                     (kwargs["epoch"] - self.cfg.skip_epochs) / self.cfg.warmup_epochs,
                     1.0,
                 )
-                * gdkd_loss
-            )
+
+            gdkd_loss = ratio * gdkd_loss
 
             loss = self.cfg.loss_weights.ce * ce_loss + gdkd_loss
 

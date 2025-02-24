@@ -115,13 +115,16 @@ class DKD(Distiller):
                 self.cfg.loss_weights.alpha * tckd_loss
                 + self.cfg.loss_weights.beta * nckd_loss
             )
-            dkd_loss = (
-                min(
+
+            if self.cfg.warmup_epochs <= 0:
+                ratio = 1.0
+            else:
+                ratio = min(
                     (kwargs["epoch"] - self.cfg.skip_epochs) / self.cfg.warmup_epochs,
                     1.0,
                 )
-                * dkd_loss
-            )
+
+            dkd_loss = ratio * dkd_loss
 
             loss = self.cfg.loss_weights.ce * ce_loss + dkd_loss
 
