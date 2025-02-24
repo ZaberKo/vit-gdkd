@@ -5,4 +5,4 @@ loss_weights:
   beta: 1.0
 T: 1.0
 skip_epochs: 0
-warmup_epochs: 1
+warmup_epochs: 0

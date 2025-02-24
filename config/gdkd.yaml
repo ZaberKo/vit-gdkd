@@ -7,4 +7,4 @@ loss_weights:
 k: 5
 T: 1.0
 skip_epochs: 0
-warmup_epochs: 1 # start count after skip_epochs
+warmup_epochs: 0 # start count after skip_epochs
