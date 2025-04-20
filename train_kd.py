@@ -314,9 +314,18 @@ def main(args):
         )
 
     print("Loading teacher model")
-    teacher_model = torchvision.models.get_model(
-        args.teacher, weights=args.teacher_weights, num_classes=num_classes
-    )
+    if args.teacher_weights in torchvision.models.get_model_weights(args.teacher).__members__:
+        teacher_model = torchvision.models.get_model(
+            args.teacher, weights=args.teacher_weights, num_classes=num_classes
+        )
+    else:
+        teacher_model = torchvision.models.get_model(
+            args.teacher, num_classes=num_classes
+        )
+        teacher_model.load_state_dict(
+            torch.load(args.teacher_weights, map_location="cpu")
+        )
+
     teacher_model.to(device)
     # load distiller cfg
     with hydra.initialize(version_base=None, config_path="config"):
@@ -459,7 +468,7 @@ def get_args_parser(add_help=True):
         "--teacher-weights",
         default="DEFAULT",
         type=str,
-        help="the teacher's weights enum name to load",
+        help="the teacher's weights enum name to load, or the path to the weights file",
     )
     parser.add_argument("--distiller", type=str, help="Distillation method")
     parser.add_argument("distiller_opts", nargs="*")
