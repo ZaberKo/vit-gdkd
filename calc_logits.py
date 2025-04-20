@@ -128,9 +128,18 @@ def main(args):
     data_loader = data_loader_test if args.valset else data_loader_train
 
     print("Creating model")
-    model = torchvision.models.get_model(
-        args.model, weights=args.weights, num_classes=num_classes
-    )
+    if args.weights in torchvision.models.get_model_weights(args.model).__members__:
+        model = torchvision.models.get_model(
+            args.model, weights=args.weights, num_classes=num_classes
+        )
+    else:
+        model = torchvision.models.get_model(
+            args.model, weights=None, num_classes=num_classes
+        )
+        model.load_state_dict(
+            torch.load(args.weights, map_location="cpu")
+        )
+
     model.to(device)
 
     # if args.distributed and args.sync_bn:
