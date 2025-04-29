@@ -462,7 +462,7 @@ def get_args_parser(add_help=True):
         "--eval-print-freq", default=10, type=int, help="print frequency"
     )
     parser.add_argument(
-        "--teacher", default="reset101", type=str, help="teacher model name"
+        "--teacher", default="resnet101", type=str, help="teacher model name"
     )
     parser.add_argument(
         "--teacher-weights",
