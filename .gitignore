@@ -230,3 +230,4 @@ pyrightconfig.json
 /output/
 /torch_home/
 /test*.py
+/exp

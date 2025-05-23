@@ -4,3 +4,4 @@ wandb
 hydra-core
 numpy
 pillow
+tqdm
