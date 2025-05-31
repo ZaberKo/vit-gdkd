@@ -28,7 +28,7 @@ def setup_wandb(args):
             exp_name = f"{exp_name}|{args.tags}"
             tags += args.tags.split(",")
 
-        wandb.init(
+        wandb_kwargs = dict(
             project="torch-distil",
             name=exp_name,
             group=exp_name,
@@ -36,6 +36,16 @@ def setup_wandb(args):
             tags=tags,
             dir=Path(args.output_dir).absolute(),
         )
+
+        if args.resume:
+            assert args.wandb_resume_id is not None, "wandb_id must be provided when resuming"
+
+            wandb_kwargs.update(
+                id=args.wandb_resume_id,
+                resume="must",
+            )
+
+        wandb.init(**wandb_kwargs)
 
 
 def wandb_record(metrics: MetricLogger, step=None, group=None | str):

@@ -405,6 +405,11 @@ def get_args_parser(add_help=True):
 
     #  ===== new =======
     parser.add_argument(
+        "--wandb-resume-id",
+        type=str,
+        help="wandb id to resume from, must specify when use --resume",
+    )
+    parser.add_argument(
         "--tags",
         default="",
         type=str,
@@ -436,9 +441,10 @@ def get_args_parser(add_help=True):
 if __name__ == "__main__":
     args = get_args_parser().parse_args()
 
-    args.output_dir = os.path.join(
-        args.output_dir,
-        datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
-        f"{args.model}-vanilla",
-    )
+    if not args.resume:
+        args.output_dir = os.path.join(
+            args.output_dir,
+            datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
+            f"{args.model}-vanilla",
+        )
     main(args)
