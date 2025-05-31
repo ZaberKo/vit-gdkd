@@ -447,4 +447,7 @@ if __name__ == "__main__":
             datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
             f"{args.model}-vanilla",
         )
+    else:
+        args.output_dir = os.path.dirname(args.resume)
+
     main(args)
