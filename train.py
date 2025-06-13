@@ -403,38 +403,6 @@ def main(args):
 def get_args_parser(add_help=True):
     parser = utils.get_default_args_parser()
 
-    #  ===== new =======
-    parser.add_argument(
-        "--wandb-resume-id",
-        type=str,
-        help="wandb id to resume from, must specify when use --resume",
-    )
-    parser.add_argument(
-        "--tags",
-        default="",
-        type=str,
-        help="specify wandb tags",
-    )
-    parser.add_argument(
-        "--val-batch-size",
-        default=32,
-        type=int,
-        help="images per gpu, the total batch size is $NGPU x batch_size",
-    )
-    parser.add_argument(
-        "--val-workers",
-        default=16,
-        type=int,
-        metavar="N",
-        help="number of data loading workers (default: 16) per process for valset",
-    )
-    parser.add_argument(
-        "--ckpt-freq", default=10, type=int, help="checkpoint frequency"
-    )
-    parser.add_argument(
-        "--eval-print-freq", default=10, type=int, help="print frequency"
-    )
-
     return parser
 
 

@@ -437,31 +437,6 @@ def get_args_parser(add_help=True):
 
     #  ===== new =======
     parser.add_argument(
-        "--tags",
-        default="",
-        type=str,
-        help="specify wandb tags",
-    )
-    parser.add_argument(
-        "--val-batch-size",
-        default=32,
-        type=int,
-        help="images per gpu, the total batch size is $NGPU x batch_size",
-    )
-    parser.add_argument(
-        "--val-workers",
-        default=16,
-        type=int,
-        metavar="N",
-        help="number of data loading workers (default: 16) per process for valset",
-    )
-    parser.add_argument(
-        "--ckpt-freq", default=10, type=int, help="checkpoint frequency"
-    )
-    parser.add_argument(
-        "--eval-print-freq", default=10, type=int, help="print frequency"
-    )
-    parser.add_argument(
         "--teacher", default="resnet101", type=str, help="teacher model name"
     )
     parser.add_argument(
@@ -479,9 +454,13 @@ def get_args_parser(add_help=True):
 if __name__ == "__main__":
     args = get_args_parser().parse_args()
 
-    args.output_dir = os.path.join(
-        args.output_dir,
-        datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
-        f"{args.model}-{args.teacher}-{args.distiller}",
-    )
+    if not args.resume:
+        args.output_dir = os.path.join(
+            args.output_dir,
+            datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
+            f"{args.model}-{args.teacher}-{args.distiller}",
+        )
+    else:
+        args.output_dir = os.path.dirname(args.resume)
+
     main(args)
