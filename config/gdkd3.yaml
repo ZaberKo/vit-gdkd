@@ -1,7 +1,7 @@
 cls: distillers.GDKD3
 loss_weights:
   ce: 1.0
-  w0: 0.5
+  w0: 1.0
   w1: 1.0
   w2: 1.0
 k: 5
