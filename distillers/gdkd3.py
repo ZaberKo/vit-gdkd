@@ -96,13 +96,13 @@ class GDKD3(Distiller):
             high_loss = torch.zeros_like(loss)
             low_top_loss = torch.zeros_like(loss)
             low_other_loss = torch.zeros_like(loss)
-            gdkd_loss = torch.zeros_like(loss)
+            gdkd3_loss = torch.zeros_like(loss)
         else:
             high_loss, low_top_loss, low_other_loss = gdkd3_loss_fn(
                 student_logits, teacher_logits, k=self.cfg.k, temperature=self.cfg.T
             )
 
-            gdkd_loss = (
+            gdkd3_loss = (
                 self.cfg.loss_weights.w0 * high_loss
                 + self.cfg.loss_weights.w1 * low_top_loss
                 + self.cfg.loss_weights.w2 * low_other_loss
@@ -116,13 +116,13 @@ class GDKD3(Distiller):
                     1.0,
                 )
 
-            gdkd_loss = ratio * gdkd_loss
+            gdkd3_loss = ratio * gdkd3_loss
 
-            loss = self.cfg.loss_weights.ce * ce_loss + gdkd_loss
+            loss = self.cfg.loss_weights.ce * ce_loss + gdkd3_loss
 
         info_dict = {
             "ce_loss": ce_loss.detach(),
-            "gdkd_loss": gdkd_loss.detach(),
+            "gdkd3_loss": gdkd3_loss.detach(),
             "high_loss": high_loss.detach(),
             "low_top_loss": low_top_loss.detach(),
             "low_other_loss": low_other_loss.detach(),
